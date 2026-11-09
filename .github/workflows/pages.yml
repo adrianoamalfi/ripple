@@ -55,7 +55,7 @@ jobs:
           gh release download "$tag" --pattern 'ripple-*.bin' --dir _site/firmware
           node site/scripts/make-manifests.mjs _site/firmware _site/install "$tag"
       - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
 
