@@ -1,0 +1,70 @@
+name: Pages
+
+# Publishes the project site: the landing page, the live demo (the dashboard with a
+# simulated board) and the web installer (fed by the latest release's firmware).
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - "web/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:     # the release workflow triggers this after publishing a release
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Build the live demo
+        working-directory: web
+        run: |
+          npm ci
+          npm run build:demo
+      - name: Assemble the site
+        run: |
+          mkdir _site
+          cp -r site/. _site/
+          rm -rf _site/scripts
+          mkdir _site/demo
+          cp web/dist-demo/index.html _site/demo/index.html
+      - name: Add the latest release's firmware to the web installer
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag=$(gh release list --limit 1 --json tagName --jq '.[0].tagName' || true)
+          if [ -z "$tag" ]; then
+            echo "No release yet: the installer page will say so."
+            exit 0
+          fi
+          mkdir -p _site/firmware
+          gh release download "$tag" --pattern 'ripple-*.bin' --dir _site/firmware
+          node site/scripts/make-manifests.mjs _site/firmware _site/install "$tag"
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://adrianoamalfi.github.io/ripple/sitemap.xml

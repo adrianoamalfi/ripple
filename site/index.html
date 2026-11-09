@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ripple: motion sensing with nothing but WiFi</title>
+<meta name="description" content="Ripple turns a €3 ESP8266 into a motion and presence sensor using only the WiFi signal. No camera, no PIR, no extra hardware. Open source, local, with Home Assistant support.">
+<meta name="color-scheme" content="light dark">
+<link rel="canonical" href="https://adrianoamalfi.github.io/ripple/">
+<link rel="icon" href="assets/logo.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Ripple: motion sensing with nothing but WiFi">
+<meta property="og:description" content="Turn a €3 ESP8266 into a motion and presence sensor. No camera, no PIR. Open source, local, Home Assistant ready.">
+<meta property="og:url" content="https://adrianoamalfi.github.io/ripple/">
+<meta property="og:image" content="https://adrianoamalfi.github.io/ripple/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="wrap bar">
+  <a class="brand" href="./" aria-label="Ripple home">
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="16" cy="16" r="3.2" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="7.6" opacity=".8"/><circle cx="16" cy="16" r="12.6" opacity=".42"/></svg>
+    Ripple
+  </a>
+  <nav class="nav" aria-label="Main">
+    <a href="#how" class="hide-sm">How it works</a>
+    <a href="#limits" class="hide-sm">Limits</a>
+    <a href="demo/">Demo</a>
+    <a href="install/">Install</a>
+    <a href="https://github.com/adrianoamalfi/ripple">GitHub</a>
+    <span class="pill" data-latest hidden></span>
+  </nav>
+</header>
+
+<main id="main">
+  <div class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="eyebrow rise" style="--i:0">Open source · ESP8266 · Home Assistant</p>
+        <h1 class="rise" style="--i:1">Sense motion with nothing but <em>WiFi.</em></h1>
+        <p class="lede rise" style="--i:2">Ripple turns a €3 ESP8266 into a motion and presence sensor. No camera, no PIR, no extra hardware: it listens to how people disturb the WiFi you already have.</p>
+        <div class="cta rise" style="--i:3">
+          <a class="btn primary" href="demo/">Try the live demo</a>
+          <a class="btn" href="install/">Install on your board</a>
+        </div>
+        <ul class="facts rise" style="--i:4">
+          <li>10 readings a second</li>
+          <li>100% local, no cloud</li>
+          <li>MQTT &amp; Home Assistant</li>
+          <li>MIT licensed</li>
+        </ul>
+      </div>
+
+      <div class="scope rise" style="--i:3" data-state="empty" role="group" aria-label="Interactive signal demonstration">
+        <div class="scope-head">
+          <span class="scope-title">WiFi signal fluctuation</span>
+          <span class="state" role="status">ROOM EMPTY</span>
+        </div>
+        <canvas id="scope" aria-label="A moving trace that rises when you move your pointer over it"></canvas>
+        <div class="scope-foot">
+          <span>Move over this panel: you're the person in the room.</span>
+          <button type="button">Simulate a walk</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section id="how">
+    <div class="wrap">
+      <p class="kicker">How it works</p>
+      <h2>A body in the room changes the radio waves in it.</h2>
+      <p class="sub">The strength of the link between your board and your router is never perfectly steady. When someone moves, it jumps around more. Ripple measures how much, and learns what counts as normal in your room.</p>
+      <ol class="steps">
+        <li><h3>Listen</h3><p>Ten times a second, the board reads the signal strength (RSSI) of its connection to your router and keeps the last two seconds.</p></li>
+        <li><h3>Learn</h3><p>A four-step guided calibration records your empty room and you walking, sets the threshold from that data, and tells you honestly how well it works in that spot.</p></li>
+        <li><h3>Detect</h3><p>When the signal fluctuates more than your room's normal noise, that's motion. Presence stays on for 30 seconds after the last movement.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="band" id="dashboard">
+    <div class="wrap">
+      <p class="kicker">The dashboard</p>
+      <h2>A real interface, served by a €3 board.</h2>
+      <p class="sub">Open the board's address in any browser: live signal chart, calibration, sensitivity, Home Assistant settings. Light and dark themes, works on your phone, no internet needed.</p>
+      <div class="showcase">
+        <figure class="shot-main">
+          <div class="frame"><picture>
+            <source media="(prefers-color-scheme: dark)" srcset="assets/img/dashboard-dark.jpg">
+            <img src="assets/img/dashboard-light.jpg" width="2480" height="2360" loading="lazy" alt="The Ripple dashboard during a motion event, with the signal chart and the threshold line">
+          </picture></div>
+          <figcaption>Status, signal and a live chart: the amber band is movement.</figcaption>
+        </figure>
+        <figure class="shot-phone">
+          <div class="phone"><picture>
+            <source media="(prefers-color-scheme: dark)" srcset="assets/img/mobile-dark.jpg">
+            <img src="assets/img/mobile-light.jpg" width="1170" height="2532" loading="lazy" alt="The dashboard on a phone">
+          </picture></div>
+          <figcaption>Made for phones too.</figcaption>
+        </figure>
+        <figure class="shot-a">
+          <div class="frame"><img src="assets/img/calibration-result.jpg" width="1156" height="726" loading="lazy" alt="The result of the guided calibration: quality, share of walking detected and the threshold"></div>
+          <figcaption>Calibration tells you how well it works where the board is.</figcaption>
+        </figure>
+        <figure class="shot-b">
+          <div class="phone"><picture>
+            <source media="(prefers-color-scheme: dark)" srcset="assets/img/portal-dark.jpg">
+            <img src="assets/img/portal-light.jpg" width="1170" height="2340" loading="lazy" alt="The WiFi setup page the board shows on its own network">
+          </picture></div>
+          <figcaption>First-time setup: the board opens its own network and a page to pick your WiFi.</figcaption>
+        </figure>
+      </div>
+      <p style="margin-top:2rem"><a class="btn primary" href="demo/">Open the interactive demo</a> <span style="color:var(--muted);margin-left:.75rem">A simulated board: nothing to install.</span></p>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="wrap">
+      <p class="kicker">What you get</p>
+      <h2>Small hardware, thorough software.</h2>
+      <ul class="features" style="margin-top:2rem">
+        <li><strong>Guided calibration</strong><span>Tunes itself from your room and grades the result: good, fair or poor.</span></li>
+        <li><strong>WiFi setup without code</strong><span>The board opens its own network with a setup page: pick your WiFi, done. No file to edit.</span></li>
+        <li><strong>Home Assistant, no YAML</strong><span>MQTT discovery creates the device and its entities by itself.</span></li>
+        <li><strong>Local and private</strong><span>No cloud, no account, no camera. It detects movement, not who moved.</span></li>
+        <li><strong>Resilient</strong><span>Settings survive reboots. A broker that is down never interrupts sensing, and the board reconnects by itself after a power cut.</span></li>
+        <li><strong>Open and tested</strong><span>MIT licensed, with unit tests for the algorithm and the calibration, and CI on every change.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="band" id="homeassistant">
+    <div class="wrap split">
+      <div>
+        <p class="kicker">Home Assistant</p>
+        <h2>It shows up by itself.</h2>
+        <p class="sub" style="margin-bottom:0">Enter your MQTT broker once. Home Assistant finds a device called <code>Ripple xxxxxx</code> with everything below, and marks it unavailable if the board drops off the network, so an offline sensor never looks like "no motion".</p>
+        <ul class="ents"><li>Motion</li><li>Presence</li><li>Signal strength</li><li>Signal fluctuation</li><li>Motion threshold</li><li>Quick calibration</li></ul>
+      </div>
+      <figure>
+        <div class="frame"><img src="assets/img/home-assistant.jpg" width="1156" height="1346" loading="lazy" alt="Home Assistant card in the dashboard, connected, listing the entities it creates"></div>
+      </figure>
+    </div>
+  </section>
+
+  <section id="limits">
+    <div class="narrow">
+      <div class="honest">
+        <p class="kicker" style="color:inherit">Straight talk</p>
+        <h2>What it can't do</h2>
+        <p style="margin:0">The ESP8266 only exposes a rough, whole-number signal strength, not the rich radio data an ESP32 can give. So:</p>
+        <ul>
+          <li><strong>It sees movement, not stillness.</strong> Someone sitting perfectly still doesn't disturb the signal. That's why presence means "movement in the last 30 seconds".</li>
+          <li><strong>Placement matters a lot.</strong> Right next to the router the link is so stable that walking can be invisible. A few metres away, with people crossing the line between board and router, works far better. The calibration tells you when a spot is poor.</li>
+          <li><strong>Other things move the signal too:</strong> pets, fans, neighbours' WiFi.</li>
+          <li><strong>It's a convenience sensor,</strong> not a security device.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="hardware">
+    <div class="wrap">
+      <p class="kicker">Hardware</p>
+      <h2>Any ESP8266 with 4&nbsp;MB of flash.</h2>
+      <p class="sub">Typically €3–6. Power it from a USB charger near where you want to sense.</p>
+      <table>
+        <thead><tr><th scope="col">Board</th><th scope="col">Status</th></tr></thead>
+        <tbody>
+          <tr><td>NodeMCU v2 / v3</td><td>Supported</td></tr>
+          <tr><td>Wemos / LOLIN D1 mini</td><td>Supported</td></tr>
+          <tr><td>Generic ESP-12E / ESP-12F module</td><td>Supported</td></tr>
+          <tr><td>ESP-01 (1&nbsp;MB flash)</td><td>Too small for the dashboard</td></tr>
+          <tr><td>ESP32</td><td>Not yet: it has better radio data, contributions welcome</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="start">
+    <div class="narrow">
+      <p class="kicker">Get started</p>
+      <h2>Ten minutes, three steps.</h2>
+      <ol class="steps" style="grid-template-columns:1fr;gap:1.5rem;margin-top:2rem">
+        <li><h3>Flash</h3><p>Plug the board in and use the <a href="install/">web installer</a> in Chrome or Edge. No tools to install.</p></li>
+        <li><h3>Connect</h3><p>Join the <code>Ripple-xxxxxx</code> WiFi network the board opens, pick your own WiFi on the page that appears, and open <code>ripple-xxxxxx.local</code>.</p></li>
+        <li><h3>Calibrate</h3><p>Press <em>Start guided calibration</em> and follow the four steps. Then, if you like, add it to Home Assistant.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="band" id="faq">
+    <div class="narrow">
+      <p class="kicker">Questions</p>
+      <h2>FAQ</h2>
+      <div style="margin-top:2rem">
+        <details><summary>Does it need the internet?</summary><p>No. The board serves its own dashboard and talks to your own router and MQTT broker. Nothing leaves your network.</p></details>
+        <details><summary>How accurate is it?</summary><p>It depends on the room and on where you put the board, which is why the calibration grades itself. In a good spot it catches most walking; in a bad one it catches almost none. Real reports help us improve: tell us how it goes at home.</p></details>
+        <details><summary>Can it detect someone sitting still?</summary><p>No. A person who isn't moving doesn't change the signal enough. Presence is "there was movement in the last 30 seconds".</p></details>
+        <details><summary>Can it see through walls?</summary><p>Walls weaken the effect, so one board covers one room reasonably and little beyond it.</p></details>
+        <details><summary>Is it a camera? Does it identify people?</summary><p>No camera, no microphone. It measures radio signal strength and can't tell who moved, only that something did.</p></details>
+        <details><summary>Does it work with an ESP32?</summary><p>Not yet. The ESP32 can provide much richer channel data, and that would be a great contribution.</p></details>
+        <details><summary>Is it secure?</summary><p>It is meant for a trusted home network: the dashboard has no password yet, so don't expose it to the internet. Details are in the <a href="https://github.com/adrianoamalfi/ripple/blob/main/SECURITY.md">security notes</a>.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="final">
+    <div class="narrow">
+      <h2>Give your WiFi a second job.</h2>
+      <p class="sub">Try it in your browser first, then put it on a board.</p>
+      <div class="cta">
+        <a class="btn primary" href="demo/">Try the live demo</a>
+        <a class="btn" href="install/">Install on your board</a>
+        <a class="btn" href="https://github.com/adrianoamalfi/ripple">View on GitHub</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Ripple is open source under the <a href="https://github.com/adrianoamalfi/ripple/blob/main/LICENSE">MIT license</a> · © Adriano Amalfi</span>
+    <nav aria-label="Footer">
+      <a href="https://github.com/adrianoamalfi/ripple/tree/main/docs">Documentation</a>
+      <a href="https://github.com/adrianoamalfi/ripple/releases">Releases</a>
+      <a href="https://github.com/adrianoamalfi/ripple/issues">Issues</a>
+      <a href="https://github.com/adrianoamalfi/ripple/blob/main/CONTRIBUTING.md">Contribute</a>
+    </nav>
+  </div>
+</footer>
+
+<script src="assets/scope.js" defer></script>
+<script src="assets/latest.js" defer></script>
+</body>
+</html>

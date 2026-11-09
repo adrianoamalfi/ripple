@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Install Ripple from your browser</title>
+<meta name="description" content="Flash Ripple onto an ESP8266 straight from Chrome or Edge, over USB. No tools to install.">
+<meta name="color-scheme" content="light dark">
+<link rel="canonical" href="https://adrianoamalfi.github.io/ripple/install/">
+<link rel="icon" href="../assets/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../assets/style.css">
+<script type="module" src="https://unpkg.com/esp-web-tools@10.4.0/dist/web/install-button.js?module"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="wrap bar">
+  <a class="brand" href="../" aria-label="Ripple home">
+    <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="16" cy="16" r="3.2" fill="currentColor" stroke="none"/><circle cx="16" cy="16" r="7.6" opacity=".8"/><circle cx="16" cy="16" r="12.6" opacity=".42"/></svg>
+    Ripple
+  </a>
+  <nav class="nav" aria-label="Main">
+    <a href="../demo/">Demo</a>
+    <a href="https://github.com/adrianoamalfi/ripple/tree/main/docs">Docs</a>
+    <a href="https://github.com/adrianoamalfi/ripple">GitHub</a>
+  </nav>
+</header>
+
+<main id="main" class="narrow" style="padding:clamp(1.5rem,5vw,3.5rem) 0 4rem">
+  <p class="kicker">Install</p>
+  <h1 style="font-size:clamp(2.2rem,5vw,3.4rem)">Flash Ripple from your browser.</h1>
+  <p class="lede">Plug the board into your computer with a USB cable and press the button. It takes about a minute.</p>
+
+  <div class="install-card">
+    <label class="field" for="board">Your board</label>
+    <select id="board">
+      <option value="nodemcuv2">NodeMCU v2 / v3</option>
+      <option value="d1_mini">Wemos / LOLIN D1 mini</option>
+      <option value="esp12e">Generic ESP-12E / ESP-12F module</option>
+    </select>
+    <esp-web-install-button id="installer" manifest="manifest-nodemcuv2.json">
+      <span slot="unsupported">This browser can't flash USB devices. Open this page in <strong>Chrome</strong> or <strong>Edge</strong> on a computer.</span>
+      <span slot="not-allowed">Flashing needs a secure (https) connection.</span>
+    </esp-web-install-button>
+    <p class="note" id="missing" hidden>No firmware has been published yet. Check the <a href="https://github.com/adrianoamalfi/ripple/releases">releases page</a>, or build it yourself with PlatformIO (see the <a href="https://github.com/adrianoamalfi/ripple/blob/main/docs/getting-started.md">guide</a>).</p>
+    <p class="note" id="version" hidden></p>
+  </div>
+
+  <h2 style="margin-top:3rem;font-size:1.7rem">After flashing</h2>
+  <ol class="how">
+    <li>On your phone or laptop, join the WiFi network <strong><code>Ripple-xxxxxx</code></strong> that the board opens (no password).</li>
+    <li>A setup page opens by itself. If it doesn't, browse to <code>http://192.168.4.1/</code>.</li>
+    <li>Choose your WiFi, type its password and press <em>Connect</em>.</li>
+    <li>Reconnect to your usual WiFi and open <code>http://ripple-xxxxxx.local/</code> (the page shows the exact address).</li>
+    <li>In the dashboard, press <em>Start guided calibration</em>.</li>
+  </ol>
+
+  <h2 style="margin-top:2.5rem;font-size:1.7rem">If something goes wrong</h2>
+  <ul>
+    <li>Use a USB cable that carries data: some are charge-only.</li>
+    <li>If the installer can't connect, hold the board's <em>FLASH</em> button while you press <em>RESET</em>, then try again.</li>
+    <li>When asked, erasing the flash is fine on a first install. It also clears old settings.</li>
+    <li>More help in the <a href="https://github.com/adrianoamalfi/ripple/blob/main/docs/troubleshooting.md">troubleshooting guide</a>.</li>
+  </ul>
+</main>
+
+<script>
+  const select = document.getElementById("board")
+  const button = document.getElementById("installer")
+  const missing = document.getElementById("missing")
+  const version = document.getElementById("version")
+
+  async function update() {
+    const manifest = `manifest-${select.value}.json`
+    button.setAttribute("manifest", manifest)
+    try {
+      const res = await fetch(manifest, { cache: "no-store" })
+      if (!res.ok) throw new Error(String(res.status))
+      const m = await res.json()
+      missing.hidden = true
+      version.hidden = false
+      version.textContent = `Firmware version ${m.version}. Flashing replaces whatever is on the board.`
+      button.hidden = false
+    } catch {
+      missing.hidden = false
+      version.hidden = true
+      button.hidden = true
+    }
+  }
+  select.addEventListener("change", update)
+  update()
+</script>
+</body>
+</html>

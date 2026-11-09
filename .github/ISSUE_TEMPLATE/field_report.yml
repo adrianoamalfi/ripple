@@ -1,0 +1,24 @@
+name: Field report
+description: Tell us how Ripple works in your home (positive or negative)
+labels: [field-report]
+body:
+  - type: markdown
+    attributes:
+      value: Real-world results decide what gets improved. Thank you!
+  - type: input
+    id: setup
+    attributes:
+      label: Board and distance to the router
+      placeholder: "D1 mini, about 5 m, one wall"
+  - type: dropdown
+    id: quality
+    attributes:
+      label: Guided calibration result
+      options: [Good, Fair, Poor, Haven't run it]
+  - type: textarea
+    id: notes
+    attributes:
+      label: How does it behave?
+      description: What it detects, what it misses, false alarms, anything surprising. A screenshot of the calibration result is great.
+    validations:
+      required: true

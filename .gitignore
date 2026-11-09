@@ -1,0 +1,14 @@
+.pio/
+.venv/
+.vscode/
+node_modules/
+include/secrets.h
+*.pem
+*.key
+.DS_Store
+web/dist/
+web/node_modules/
+dist-demo/
+site/demo/
+site/firmware/
+site/install/manifest-*.json
