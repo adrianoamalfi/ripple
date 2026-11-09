@@ -11,6 +11,13 @@ updates:
     groups:
       minor-and-patch:
         update-types: [minor, patch]
+    ignore:
+      # Stay on the Node.js major that CI and the release workflow use.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      # The lint and UI toolchain follow TypeScript; major bumps are done by hand.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: npm
     directory: /tools/screenshots
     schedule:

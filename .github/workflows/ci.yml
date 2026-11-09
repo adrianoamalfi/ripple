@@ -17,11 +17,11 @@ jobs:
     name: Firmware unit tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.platformio
           key: pio-${{ runner.os }}-${{ hashFiles('platformio.ini') }}
@@ -37,11 +37,11 @@ jobs:
       matrix:
         env: [nodemcuv2, d1_mini, esp12e]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.platformio
           key: pio-${{ runner.os }}-${{ hashFiles('platformio.ini') }}
@@ -52,7 +52,7 @@ jobs:
         run: |
           size=$(stat -c %s .pio/build/${{ matrix.env }}/firmware.bin)
           echo "### ${{ matrix.env }}: firmware $((size / 1024)) KB" >> "$GITHUB_STEP_SUMMARY"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: firmware-${{ matrix.env }}
           path: .pio/build/${{ matrix.env }}/firmware.bin
@@ -65,8 +65,8 @@ jobs:
       run:
         working-directory: web
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -77,8 +77,6 @@ jobs:
       - run: npm test
       - run: npm run build
       - name: Committed dashboard asset is up to date
-        # The firmware embeds firmware_assets/dashboard.html.gz. Warn (not fail) while
-        # we learn whether builds are byte-identical across platforms.
-        continue-on-error: true
+        # The firmware embeds firmware_assets/dashboard.html.gz: it must match web/.
         run: npm run verify:asset
       - run: npm run build:demo

@@ -17,7 +17,7 @@ jobs:
     outputs:
       version: ${{ steps.v.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - id: v
         run: |
           version="${GITHUB_REF_NAME#v}"
@@ -40,8 +40,8 @@ jobs:
       matrix:
         env: [nodemcuv2, d1_mini, esp12e]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
@@ -51,10 +51,10 @@ jobs:
         run: |
           npm ci
           npm run build
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: ~/.platformio
           key: pio-${{ runner.os }}-${{ hashFiles('platformio.ini') }}
@@ -66,7 +66,7 @@ jobs:
         run: pio run -e ${{ matrix.env }}
       - name: Name the image
         run: cp .pio/build/${{ matrix.env }}/firmware.bin "ripple-${{ matrix.env }}-${GITHUB_REF_NAME}.bin"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: firmware-${{ matrix.env }}
           path: ripple-*.bin
@@ -78,8 +78,8 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v4
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           pattern: firmware-*
           merge-multiple: true
