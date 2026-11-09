@@ -200,3 +200,6 @@ ol.how li::marker { color: var(--accent); font-weight: 700; }
   @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .btn { transition: none; } }
+
+/* the installer button is a custom element: make [hidden] win over its display rule */
+[hidden] { display: none !important; }
